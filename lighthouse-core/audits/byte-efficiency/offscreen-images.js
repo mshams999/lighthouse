@@ -212,7 +212,7 @@ class OffscreenImages extends ByteEfficiencyAudit {
     } catch (err) {
       // use end of trace as a substitute for finding interactive time
       items = OffscreenImages.filterObservedResults(unfilteredResults,
-        await artifacts.requestTraceOfTab(trace).then(tot => tot.timings.traceEnd));
+        await artifacts.requestTraceOfTab(trace).then(tot => tot.timestamps.traceEnd));
     }
 
     /** @type {LH.Result.Audit.OpportunityDetails['headings']} */
