@@ -59,7 +59,7 @@ function generateInteractiveFuncError() {
 
 function generateTraceOfTab(desiredTimeInSeconds) {
   return () => Promise.resolve({
-    timings: {
+    timestamps: {
       traceEnd: desiredTimeInSeconds * 1000000,
     },
   });
