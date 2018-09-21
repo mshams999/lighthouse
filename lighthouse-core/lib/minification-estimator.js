@@ -6,8 +6,9 @@
 'use strict';
 
 // https://www.ecma-international.org/ecma-262/9.0/index.html#sec-punctuators
-const PUNCTUATOR_REGEX = /(return|{|\(|\[|\.\.\.|;|,|<|>|<=|>=|==|!=|===|!==|\+|-|\*|%|\*\*|\+\+|--|<<|>>|>>>|&|\||\^|!|~|&&|\|\||\?|:|=|\+=|-=|\*=|%=|\*\*=|<<=|>>=|>>>=|&=|\|=|\^=|=>|\/|\/=|\})$/
-const WHITESPACE_REGEX = /( |\n|\t)+$/
+// eslint-disable-next-line max-len
+const PUNCTUATOR_REGEX = /(return|{|\(|\[|\.\.\.|;|,|<|>|<=|>=|==|!=|===|!==|\+|-|\*|%|\*\*|\+\+|--|<<|>>|>>>|&|\||\^|!|~|&&|\|\||\?|:|=|\+=|-=|\*=|%=|\*\*=|<<=|>>=|>>>=|&=|\|=|\^=|=>|\/|\/=|\})$/;
+const WHITESPACE_REGEX = /( |\n|\t)+$/;
 
 /**
  * Look backwards from `startPosition` in `content` for an ECMAScript punctuator.
@@ -148,14 +149,14 @@ function computeTokenLength(content, features) {
  * @param {string} content
  */
 function computeJSTokenLength(content) {
-  return computeTokenLength(content, {singlelineComments: true, regex: true})
+  return computeTokenLength(content, {singlelineComments: true, regex: true});
 }
 
 /**
  * @param {string} content
  */
 function computeCSSTokenLength(content) {
-  return computeTokenLength(content, {singlelineComments: false, regex: false})
+  return computeTokenLength(content, {singlelineComments: false, regex: false});
 }
 
-module.exports = {computeJSTokenLength, computeCSSTokenLength}
+module.exports = {computeJSTokenLength, computeCSSTokenLength};
