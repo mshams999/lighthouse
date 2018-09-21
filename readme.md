@@ -164,7 +164,7 @@ Lighthouse can produce a report as JSON or HTML.
 
 HTML report:
 
-![Lighthouse report](https://user-images.githubusercontent.com/2301202/40556754-b9361c66-6002-11e8-8957-68c7bac85fa4.png)
+![Lighthouse report](/assets/example_audit.png)
 
 ### Online Viewer
 
@@ -230,9 +230,10 @@ yarn build-all
 
 ```sh
 node lighthouse-cli http://example.com
+# append --chrome-flags="--no-sandbox --headless --disable-gpu" if you run into problems connecting to Chrome
 ```
 
-> **Getting started tip**: `node --inspect --debug-brk lighthouse-cli http://example.com` to open up Chrome DevTools and step
+> **Getting started tip**: `node --inspect-brk lighthouse-cli http://example.com` to open up Chrome DevTools and step
 through the entire app. See [Debugging Node.js with Chrome
 DevTools](https://medium.com/@paul_irish/debugging-node-js-nightlies-with-chrome-devtools-7c4a1b95ae27#.59rma3ukm)
 for more info.
@@ -279,12 +280,14 @@ Other awesome open source projects that use Lighthouse.
 * **[lighthouse-hue](https://github.com/ebidel/lighthouse-hue)** - set the color of Philips Hue lights based on a Lighthouse score
    * **[lighthouse-magic-light](https://github.com/manekinekko/lighthouse-magic-light)** set the color of the MagicLight Bluetooth Smart Light Bulb based on Lighthouse score
 * **[lighthouse-batch](https://www.npmjs.com/package/lighthouse-batch)** - run Lighthouse over a number of sites and generate a summary of their metrics/scores.
+* **[lighthouse-badges](https://github.com/emazzotta/lighthouse-badges)** - Generate gh-badges (shields.io) based on Lighthouse performance.
 * **[lighthouse-cron](https://github.com/thearegee/lighthouse-cron)** - Cron multiple batch Lighthouse audits and emit results for sending to remote server.
 * **[lightcrawler](https://github.com/github/lightcrawler)** - Crawl a website and run each page found through Lighthouse.
 * **[lighthouse-lambda](https://github.com/joytocode/lighthouse-lambda)** - Run Lighthouse on AWS Lambda with prebuilt stable desktop Headless Chrome.
 * **[lighthouse-security](https://github.com/voorhoede/lighthouse-security#readme)** - Run a set of security audits along with Lighthouse.
 * **[Garie](https://github.com/boyney123/garie)** — An open source tool for monitoring performance using Lighthouse,  PageSpeed Insights, [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/) and [Docker](https://www.docker.com/).
 * **[lighthouse-ci](https://github.com/andreasonny83/lighthouse-ci)** - Run Lighthouse and assert scores satisfy your custom thresholds.
+* **[lighthouse4u](https://github.com/godaddy/lighthouse4u)** - LH4U provides Google Lighthouse as a service, surfaced by both a friendly UI+API, and backed by Elastic Search for easy querying and visualization.
 
 ## FAQ
 

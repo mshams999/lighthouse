@@ -6,7 +6,7 @@
 'use strict';
 
 const log = require('lighthouse-logger');
-const LHError = require('../lib/errors');
+const LHError = require('../lib/lh-error');
 const URL = require('../lib/url-shim');
 const NetworkRecorder = require('../lib/network-recorder.js');
 const constants = require('../config/constants');
@@ -54,8 +54,9 @@ const Driver = require('../gather/driver.js'); // eslint-disable-line no-unused-
  *     ii. all gatherers' afterPass()
  *
  * 3. Teardown
- *   A. GatherRunner.disposeDriver()
- *   B. collect all artifacts and return them
+ *   A. clearDataForOrigin
+ *   B. GatherRunner.disposeDriver()
+ *   C. collect all artifacts and return them
  *     i. collectArtifacts() from completed passes on each gatherer
  *     ii. add trace data and computed artifact methods
  */
@@ -162,6 +163,9 @@ class GatherRunner {
     } else if (mainRecord.failed) {
       errorCode = LHError.errors.FAILED_DOCUMENT_REQUEST;
       errorReason = mainRecord.localizedFailDescription;
+    } else if (mainRecord.hasErrorStatusCode()) {
+      errorCode = LHError.errors.ERRORED_DOCUMENT_REQUEST;
+      errorReason = `Status code: ${mainRecord.statusCode}`;
     }
 
     if (errorCode) {
@@ -355,7 +359,7 @@ class GatherRunner {
 
       // Fail the run if more than 50% of all artifacts failed due to page load failure.
       if (pageLoadFailures.length > Object.keys(gathererArtifacts).length * 0.5) {
-        throw pageLoadFailures[0];
+        throw LHError.fromLighthouseError(pageLoadFailures[0]);
       }
     }
 
@@ -444,6 +448,8 @@ class GatherRunner {
           firstPass = false;
         }
       }
+      const resetStorage = !options.settings.disableStorageReset;
+      if (resetStorage) await driver.clearDataForOrigin(options.requestedUrl);
       await GatherRunner.disposeDriver(driver);
       return GatherRunner.collectArtifacts(gathererResults, baseArtifacts);
     } catch (err) {

@@ -18,6 +18,7 @@ const path = require('path');
 const URL = require('./lib/url-shim');
 const Sentry = require('./lib/sentry');
 const generateReport = require('./report/report-generator').generateReport;
+const LHError = require('./lib/lh-error.js');
 
 /** @typedef {import('./gather/connections/connection.js')} Connection */
 /** @typedef {import('./config/config.js')} Config */
@@ -40,11 +41,9 @@ class Runner {
       const lighthouseRunWarnings = [];
 
       const sentryContext = Sentry.getContext();
-      // @ts-ignore TODO(bckenny): Sentry type checking
       Sentry.captureBreadcrumb({
         message: 'Run started',
         category: 'lifecycle',
-        // @ts-ignore TODO(bckenny): Sentry type checking
         data: sentryContext && sentryContext.extra,
       });
 
@@ -65,7 +64,7 @@ class Runner {
         if (!requestedUrl) {
           throw new Error('Cannot run audit mode on empty URL');
         }
-        if (runOpts.url && runOpts.url !== requestedUrl) {
+        if (runOpts.url && !URL.equalWithExcludedFragments(runOpts.url, requestedUrl)) {
           throw new Error('Cannot run audit mode on different URL');
         }
       } else {
@@ -133,22 +132,24 @@ class Runner {
         requestedUrl: requestedUrl,
         finalUrl: artifacts.URL.finalUrl,
         runWarnings: lighthouseRunWarnings,
+        runtimeError: Runner.getArtifactRuntimeError(artifacts),
         audits: resultsById,
         configSettings: settings,
         categories,
         categoryGroups: runOpts.config.groups || undefined,
         timing: {total: Date.now() - startTime},
+        i18n: {
+          rendererFormattedStrings: i18n.getRendererFormattedStrings(settings.locale),
+          icuMessagePaths: {},
+        },
       };
 
-      lhr.i18n = {
-        rendererFormattedStrings: i18n.getRendererFormattedStrings(settings.locale),
-        icuMessagePaths: i18n.replaceIcuMessageInstanceIds(lhr, settings.locale),
-      };
+      // Replace ICU message references with localized strings; save replaced paths in lhr.
+      lhr.i18n.icuMessagePaths = i18n.replaceIcuMessageInstanceIds(lhr, settings.locale);
 
       const report = generateReport(lhr, settings.output);
       return {lhr, artifacts, report};
     } catch (err) {
-      // @ts-ignore TODO(bckenny): Sentry type checking
       await Sentry.captureException(err, {level: 'fatal'});
       throw err;
     }
@@ -189,7 +190,12 @@ class Runner {
     artifacts = Object.assign({}, Runner.instantiateComputedArtifacts(), artifacts);
 
     if (artifacts.settings) {
-      const overrides = {gatherMode: undefined, auditMode: undefined, output: undefined};
+      const overrides = {
+        locale: undefined,
+        gatherMode: undefined,
+        auditMode: undefined,
+        output: undefined,
+      };
       const normalizedGatherSettings = Object.assign({}, artifacts.settings, overrides);
       const normalizedAuditSettings = Object.assign({}, settings, overrides);
 
@@ -247,7 +253,6 @@ class Runner {
           // @ts-ignore An artifact *could* be an Error, but caught here, so ignore elsewhere.
           const artifactError = artifacts[artifactName];
 
-          // @ts-ignore TODO(bckenny): Sentry type checking
           Sentry.captureException(artifactError, {
             tags: {gatherer: artifactName},
             level: 'error',
@@ -281,7 +286,6 @@ class Runner {
         throw err;
       }
 
-      // @ts-ignore TODO(bckenny): Sentry type checking
       Sentry.captureException(err, {tags: {audit: audit.meta.id}, level: 'error'});
       // Non-fatal error become error audit result.
       const errorMessage = err.friendlyMessage ?
@@ -292,6 +296,31 @@ class Runner {
 
     log.verbose('statusEnd', status);
     return auditResult;
+  }
+
+  /**
+   * Returns first runtimeError found in artifacts.
+   * @param {LH.Artifacts} artifacts
+   * @return {LH.Result['runtimeError']}
+   */
+  static getArtifactRuntimeError(artifacts) {
+    for (const possibleErrorArtifact of Object.values(artifacts)) {
+      if (possibleErrorArtifact instanceof LHError && possibleErrorArtifact.lhrRuntimeError) {
+        const errorMessage = possibleErrorArtifact.friendlyMessage ?
+            `${possibleErrorArtifact.friendlyMessage} (${possibleErrorArtifact.message})` :
+            possibleErrorArtifact.message;
+
+        return {
+          code: possibleErrorArtifact.code,
+          message: errorMessage,
+        };
+      }
+    }
+
+    return {
+      code: LHError.NO_ERROR,
+      message: '',
+    };
   }
 
   /**

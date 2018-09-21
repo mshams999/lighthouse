@@ -43,6 +43,9 @@ const RESOURCE_TYPES = {
   WebSocket: 'WebSocket',
   Other: 'Other',
   Manifest: 'Manifest',
+  SignedExchange: 'SignedExchange',
+  Ping: 'Ping',
+  CSPViolationReport: 'CSPViolationReport',
 };
 
 module.exports = class NetworkRequest {
@@ -100,6 +103,13 @@ module.exports = class NetworkRequest {
     /** @type {string|undefined} */
     this.frameId = '';
     this.isLinkPreload = false;
+  }
+
+  /**
+   * @return {boolean}
+   */
+  hasErrorStatusCode() {
+    return this.statusCode >= 400;
   }
 
   /**
@@ -276,25 +286,18 @@ module.exports = class NetworkRequest {
   }
 
   /**
-   * LR loses transfer size information and passes it in the 'X-Original-Content-Length' header.
+   * LR loses transfer size information, but passes it in the 'X-TotalFetchedSize' header.
    */
   _updateTransferSizeForLightRiderIfNecessary() {
     // Bail if we're not in LightRider, this only applies there.
     if (!global.isLightRider) return;
     // Bail if we somehow already have transfer size data.
     if (this.transferSize) return;
-    // Bail if we didn't get any response headers.
-    if (!this.responseHeadersText) return;
 
-    const originalContentLength = this.responseHeaders.
-      find(item => item.name === 'X-Original-Content-Length');
-    // Bail if the x-original-content-length header was missing.
-    if (!originalContentLength) return;
-
-    // Transfer size is the original content length + length of headers
-    const contentBytes = parseFloat(originalContentLength.value);
-    const headerBytes = this.responseHeadersText.length;
-    this.transferSize = contentBytes + headerBytes;
+    const totalFetchedSize = this.responseHeaders.find(item => item.name === 'X-TotalFetchedSize');
+    // Bail if the header was missing.
+    if (!totalFetchedSize) return;
+    this.transferSize = parseFloat(totalFetchedSize.value);
   }
 
   /**
