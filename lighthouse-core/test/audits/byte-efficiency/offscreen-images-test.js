@@ -177,7 +177,7 @@ describe('OffscreenImages audit', () => {
     });
   });
 
-  it('disregards images loaded after Trace of Tab when interactive throws error', () => {
+  it('disregards images loaded after Trace End when interactive throws error', () => {
     return UnusedImages.audit_({
       ViewportDimensions: DEFAULT_DIMENSIONS,
       ImageUsage: [
@@ -247,8 +247,8 @@ describe('OffscreenImages audit', () => {
     const networkB = new NetworkNode(recordB);
     const cpu = new CPUNode({}, []);
     const timings = new Map([
-      [networkA, {startTime: 3000}],
-      [networkB, {startTime: 4000}],
+      [networkA, {startTime: 1000}],
+      [networkB, {startTime: 1500}],
       [cpu, {startTime: 1975, endTime: 2025, duration: 50}],
     ]);
 
@@ -263,11 +263,13 @@ describe('OffscreenImages audit', () => {
       requestInteractive: async () => ({pessimisticEstimate: {nodeTimings: timings}}),
       requestTraceOfTab: generateTraceOfTab(2),
     }, [], context, [], context).then(auditResult => {
-      assert.equal(auditResult.items.length, 0);
+      assert.equal(auditResult.items.length, 2);
+      assert.equal(auditResult.items[0].url, 'a');
+      assert.equal(auditResult.items[1].url, 'b');
     });
   });
 
-  it('disregards images loaded after ToT when interactive throws error (Lantern)', () => {
+  it('disregards images loaded after Trace End when interactive throws error (Lantern)', () => {
     context = {settings: {throttlingMethod: 'simulate'}};
 
     return UnusedImages.audit_({
