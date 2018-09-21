@@ -1,6 +1,8 @@
 const assert = require('assert');
 const {computeCSSTokenLength, computeJSTokenLength} = require('../../lib/minification-estimator');
 
+/* eslint-env jest */
+
 describe('minification estimator', () => {
   describe('CSS', () => {
     it('should compute length of meaningful content', () => {
@@ -106,6 +108,74 @@ describe('minification estimator', () => {
   });
 
   describe('JS', () => {
+    it('should compute the length of tokens', () => {
+      const js = `
+        const foo = 1;
+        const bar = 2;
+        console.log(foo + bar);
+      `;
 
+      const tokensOnly = 'constfoo=1;constbar=2;console.log(foo+bar);';
+      assert.equal(computeJSTokenLength(js), tokensOnly.length);
+    });
+
+    it('should handle single-line comments', () => {
+      const js = `
+        // ignore me
+        12345
+      `;
+
+      assert.equal(computeJSTokenLength(js), 5);
+    });
+
+    it('should handle multi-line comments', () => {
+      const js = `
+        /* ignore
+         * me
+         * too
+         */
+        12345
+      `;
+
+      assert.equal(computeJSTokenLength(js), 5);
+    });
+
+    it('should handle strings', () => {
+      const pairs = [
+        [`'//123' // ignored`, 7], // single quotes
+        [`"//123" // ignored`, 7], // double quotes
+        [`'     ' // ignored`, 7], // whitespace in strings count
+        [`"\\" // not ignored"`, 19], // escaped quotes handled
+      ];
+
+      for (const [js, len] of pairs) {
+        assert.equal(computeJSTokenLength(js), len, `expected '${js}' to have token length ${len}`);
+      }
+    });
+
+    it('should handle template literals', () => {
+      const js = `
+        \`/* don't ignore this */\` // 25 characters
+        12345
+      `;
+
+      assert.equal(computeJSTokenLength(js), 25 + 5);
+    });
+
+    it('should handle regular expressions', () => {
+      const js = `
+        /regex '/ // this should be in comment not string 123456789
+      `;
+
+      assert.equal(computeJSTokenLength(js), 9);
+    });
+
+    it('should distinguish regex from divide', () => {
+      const js = `
+        return 1 / 2 // hello
+      `;
+
+      assert.equal(computeJSTokenLength(js), 9);
+    });
   });
 })
