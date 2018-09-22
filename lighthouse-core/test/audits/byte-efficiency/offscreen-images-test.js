@@ -193,7 +193,7 @@ describe('OffscreenImages audit', () => {
     });
   });
 
-  it('finds images loaded before Trace of Tab when TTI when interactive throws error', () => {
+  it('finds images loaded before Trace End when TTI when interactive throws error', () => {
     return UnusedImages.audit_({
       ViewportDimensions: DEFAULT_DIMENSIONS,
       ImageUsage: [
@@ -287,7 +287,7 @@ describe('OffscreenImages audit', () => {
     });
   });
 
-  it('finds images loaded after ToT when interactive throws error (Lantern)', () => {
+  it('finds images loaded before Trace End when interactive throws error (Lantern)', () => {
     context = {settings: {throttlingMethod: 'simulate'}};
 
     return UnusedImages.audit_({
