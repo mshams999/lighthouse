@@ -2394,6 +2394,37 @@
         "summary": {}
       }
     },
+    "js-libraries": {
+      "id": "js-libraries",
+      "title": "Detected JavaScript libraries",
+      "description": "All front-end JavaScript libraries detected on the page.",
+      "score": 1,
+      "scoreDisplayMode": "binary",
+      "rawValue": true,
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "name",
+            "itemType": "text",
+            "text": "Name"
+          },
+          {
+            "key": "version",
+            "itemType": "text",
+            "text": "Version"
+          }
+        ],
+        "items": [
+          {
+            "name": "jQuery",
+            "version": "2.1.1",
+            "npm": "jquery"
+          }
+        ],
+        "summary": {}
+      }
+    },
     "no-websql": {
       "id": "no-websql",
       "title": "Uses WebSQL DB",
@@ -3261,6 +3292,10 @@
           "weight": 1
         },
         {
+          "id": "js-libraries",
+          "weight": 0
+        },
+        {
           "id": "notification-on-start",
           "weight": 1
         },
@@ -3440,7 +3475,7 @@
       "lighthouse-core/audits/metrics/first-contentful-paint.js | description": [
         "audits[first-contentful-paint].description"
       ],
-      "lighthouse-core/lib/i18n.js | seconds": [
+      "lighthouse-core/lib/i18n/i18n.js | seconds": [
         {
           "values": {
             "timeInMs": 3969.135
@@ -3502,7 +3537,7 @@
       "lighthouse-core/audits/metrics/estimated-input-latency.js | description": [
         "audits[estimated-input-latency].description"
       ],
-      "lighthouse-core/lib/i18n.js | ms": [
+      "lighthouse-core/lib/i18n/i18n.js | ms": [
         {
           "values": {
             "timeInMs": 16
@@ -3571,7 +3606,7 @@
       "lighthouse-core/audits/mainthread-work-breakdown.js | columnCategory": [
         "audits[mainthread-work-breakdown].details.headings[0].text"
       ],
-      "lighthouse-core/lib/i18n.js | columnTimeSpent": [
+      "lighthouse-core/lib/i18n/i18n.js | columnTimeSpent": [
         "audits[mainthread-work-breakdown].details.headings[1].text"
       ],
       "lighthouse-core/audits/bootup-time.js | title": [
@@ -3580,7 +3615,7 @@
       "lighthouse-core/audits/bootup-time.js | description": [
         "audits[bootup-time].description"
       ],
-      "lighthouse-core/lib/i18n.js | columnURL": [
+      "lighthouse-core/lib/i18n/i18n.js | columnURL": [
         "audits[bootup-time].details.headings[0].text",
         "audits[uses-long-cache-ttl].details.headings[0].text",
         "audits[total-byte-weight].details.headings[0].text",
@@ -3630,10 +3665,10 @@
           "path": "audits[uses-long-cache-ttl].displayValue"
         }
       ],
-      "lighthouse-core/lib/i18n.js | columnCacheTTL": [
+      "lighthouse-core/lib/i18n/i18n.js | columnCacheTTL": [
         "audits[uses-long-cache-ttl].details.headings[1].text"
       ],
-      "lighthouse-core/lib/i18n.js | columnSize": [
+      "lighthouse-core/lib/i18n/i18n.js | columnSize": [
         "audits[uses-long-cache-ttl].details.headings[2].text",
         "audits[total-byte-weight].details.headings[1].text",
         "audits[render-blocking-resources].details.headings[1].label",
@@ -3667,7 +3702,7 @@
       "lighthouse-core/audits/byte-efficiency/render-blocking-resources.js | description": [
         "audits[render-blocking-resources].description"
       ],
-      "lighthouse-core/lib/i18n.js | displayValueMsSavings": [
+      "lighthouse-core/lib/i18n/i18n.js | displayValueMsSavings": [
         {
           "values": {
             "wastedMs": 1129
@@ -3675,7 +3710,7 @@
           "path": "audits[render-blocking-resources].displayValue"
         }
       ],
-      "lighthouse-core/lib/i18n.js | columnWastedMs": [
+      "lighthouse-core/lib/i18n/i18n.js | columnWastedMs": [
         "audits[render-blocking-resources].details.headings[2].label"
       ],
       "lighthouse-core/audits/byte-efficiency/unminified-css.js | title": [
@@ -3690,7 +3725,7 @@
       "lighthouse-core/audits/byte-efficiency/unminified-javascript.js | description": [
         "audits[unminified-javascript].description"
       ],
-      "lighthouse-core/lib/i18n.js | displayValueByteSavings": [
+      "lighthouse-core/lib/i18n/i18n.js | displayValueByteSavings": [
         {
           "values": {
             "wastedBytes": 30470
@@ -3710,7 +3745,7 @@
           "path": "audits[uses-text-compression].displayValue"
         }
       ],
-      "lighthouse-core/lib/i18n.js | columnWastedBytes": [
+      "lighthouse-core/lib/i18n/i18n.js | columnWastedBytes": [
         "audits[unminified-javascript].details.headings[2].label",
         "audits[uses-webp-images].details.headings[3].label",
         "audits[uses-text-compression].details.headings[2].label"

@@ -6,7 +6,7 @@
 'use strict';
 
 const ByteEfficiencyAudit = require('./byte-efficiency-audit');
-const i18n = require('../../lib/i18n');
+const i18n = require('../../lib/i18n/i18n.js');
 const computeTokenLength = require('../../lib/minification-estimator').computeJSTokenLength;
 
 const UIStrings = {

@@ -11,7 +11,7 @@ const GatherRunner = require('./gather/gather-runner');
 const ReportScoring = require('./scoring');
 const Audit = require('./audits/audit');
 const log = require('lighthouse-logger');
-const i18n = require('./lib/i18n');
+const i18n = require('./lib/i18n/i18n.js');
 const assetSaver = require('./lib/asset-saver');
 const fs = require('fs');
 const path = require('path');
@@ -205,10 +205,17 @@ class Runner {
       }
     }
 
+    // Members of LH.Audit.Context that are shared across all audits.
+    const sharedAuditContext = {
+      settings,
+      LighthouseRunWarnings: runWarnings,
+      computedCache: new Map(),
+    };
+
     // Run each audit sequentially
     const auditResults = [];
     for (const auditDefn of audits) {
-      const auditResult = await Runner._runAudit(auditDefn, artifacts, settings, runWarnings);
+      const auditResult = await Runner._runAudit(auditDefn, artifacts, sharedAuditContext);
       auditResults.push(auditResult);
     }
 
@@ -220,12 +227,11 @@ class Runner {
    * Otherwise returns error audit result.
    * @param {LH.Config.AuditDefn} auditDefn
    * @param {LH.Artifacts} artifacts
-   * @param {LH.Config.Settings} settings
-   * @param {Array<string>} runWarnings
+   * @param {Pick<LH.Audit.Context, 'settings'|'LighthouseRunWarnings'|'computedCache'>} sharedAuditContext
    * @return {Promise<LH.Audit.Result>}
    * @private
    */
-  static async _runAudit(auditDefn, artifacts, settings, runWarnings) {
+  static async _runAudit(auditDefn, artifacts, sharedAuditContext) {
     const audit = auditDefn.implementation;
     const status = `Evaluating: ${i18n.getFormatted(audit.meta.title, 'en-US')}`;
 
@@ -274,8 +280,7 @@ class Runner {
       const auditOptions = Object.assign({}, audit.defaultOptions, auditDefn.options);
       const auditContext = {
         options: auditOptions,
-        settings,
-        LighthouseRunWarnings: runWarnings,
+        ...sharedAuditContext,
       };
 
       const product = await audit.audit(artifacts, auditContext);
@@ -306,9 +311,7 @@ class Runner {
   static getArtifactRuntimeError(artifacts) {
     for (const possibleErrorArtifact of Object.values(artifacts)) {
       if (possibleErrorArtifact instanceof LHError && possibleErrorArtifact.lhrRuntimeError) {
-        const errorMessage = possibleErrorArtifact.friendlyMessage ?
-            `${possibleErrorArtifact.friendlyMessage} (${possibleErrorArtifact.message})` :
-            possibleErrorArtifact.message;
+        const errorMessage = possibleErrorArtifact.friendlyMessage || possibleErrorArtifact.message;
 
         return {
           code: possibleErrorArtifact.code,
@@ -380,6 +383,10 @@ class Runner {
       'metrics', // the sub folder that contains metric names
       'metrics/lantern-metric.js', // lantern metric base class
       'metrics/metric.js', // computed metric base class
+
+      // Computed artifacts switching to the new system.
+      'new-computed-artifact.js',
+      'manifest-values.js',
     ];
 
     const fileList = [
