@@ -992,7 +992,11 @@ class Driver {
    */
   async beginEmulation(settings) {
     if (!settings.disableDeviceEmulation) {
-      await emulation.enableNexus5X(this);
+      if (settings.emulatedFormFactor === 'mobile') {
+        await emulation.enableNexus5X(this);
+      } else if (settings.emulatedFormFactor === 'desktop') {
+        await emulation.enableDesktop(this);
+      }
     }
 
     await this.setThrottling(settings, {useThrottling: true});
