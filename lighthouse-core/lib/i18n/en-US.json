@@ -159,17 +159,17 @@
     "message": "Minimize Critical Requests Depth",
     "description": "Imperative title of a Lighthouse audit that tells the user to reduce the depth of critical network requests to enhance initial load of a page. Critical request chains are series of dependent network requests that are important for page rendering. For example, here's a 4-request-deep chain: The biglogo.jpg image is required, but is requested via the styles.css style code, which is requested by the initialize.js javascript, which is requested by the page's HTML. This is displayed in a list of audit titles that Lighthouse generates."
   },
-  "lighthouse-core/audits/dobetterweb/dom-size.js | columnDOMDepth": {
-    "message": "Maximum DOM Depth",
-    "description": "Label for the numeric value of the maximum depth in the page's DOM tree."
+  "lighthouse-core/audits/dobetterweb/dom-size.js | columnElement": {
+    "message": "Element",
+    "description": "Table column header for the DOM element. Each DOM element is described with its HTML representation."
   },
-  "lighthouse-core/audits/dobetterweb/dom-size.js | columnDOMNodes": {
-    "message": "Total DOM Nodes",
-    "description": "Label for the total number of DOM nodes found in the page."
+  "lighthouse-core/audits/dobetterweb/dom-size.js | columnStatistic": {
+    "message": "Statistic",
+    "description": "Table column header for the type of statistic. These statistics describe how big the DOM is (count of DOM nodes, children, depth)."
   },
-  "lighthouse-core/audits/dobetterweb/dom-size.js | columnDOMWidth": {
-    "message": "Maximum Children",
-    "description": "Label for the value of the maximum number of children any DOM node in the page has."
+  "lighthouse-core/audits/dobetterweb/dom-size.js | columnValue": {
+    "message": "Value",
+    "description": "Table column header for the observed value of the DOM statistic."
   },
   "lighthouse-core/audits/dobetterweb/dom-size.js | description": {
     "message": "Browser engineers recommend pages contain fewer than ~1,500 DOM nodes. The sweet spot is a tree depth < 32 elements and fewer than 60 children/parent element. A large DOM can increase memory usage, cause longer [style calculations](https://developers.google.com/web/fundamentals/performance/rendering/reduce-the-scope-and-complexity-of-style-calculations), and produce costly [layout reflows](https://developers.google.com/speed/articles/reflow). [Learn more](https://developers.google.com/web/tools/lighthouse/audits/dom-size).",
@@ -182,6 +182,18 @@
   "lighthouse-core/audits/dobetterweb/dom-size.js | failureTitle": {
     "message": "Avoid an excessive DOM size",
     "description": "Title of a diagnostic audit that provides detail on the size of the web page's DOM. The size of a DOM is characterized by the total number of DOM nodes and greatest DOM depth. This imperative title is shown to users when there is a significant amount of execution time that could be reduced."
+  },
+  "lighthouse-core/audits/dobetterweb/dom-size.js | statisticDOMDepth": {
+    "message": "Maximum DOM Depth",
+    "description": "Label for the numeric value of the maximum depth in the page's DOM tree."
+  },
+  "lighthouse-core/audits/dobetterweb/dom-size.js | statisticDOMNodes": {
+    "message": "Total DOM Nodes",
+    "description": "Label for the total number of DOM nodes found in the page."
+  },
+  "lighthouse-core/audits/dobetterweb/dom-size.js | statisticDOMWidth": {
+    "message": "Maximum Child Elements",
+    "description": "Label for the numeric value of the maximum number of children any DOM element in the page has. The element described will have the most children in the page."
   },
   "lighthouse-core/audits/dobetterweb/dom-size.js | title": {
     "message": "Avoids an excessive DOM size",
@@ -371,41 +383,45 @@
     "message": "Performance",
     "description": "Title of the Performance category of audits. Equivalent to 'Web performance', this term is inclusive of all web page speed and loading optimization topics. Also used as a label of a score gauge; try to limit to 20 characters."
   },
-  "lighthouse-core/lib/i18n.js | columnCacheTTL": {
+  "lighthouse-core/lib/i18n/i18n.js | columnCacheTTL": {
     "message": "Cache TTL",
     "description": "Label for the TTL column in data tables, entries will be the time to live value of the cache header on a web resource"
   },
-  "lighthouse-core/lib/i18n.js | columnSize": {
+  "lighthouse-core/lib/i18n/i18n.js | columnSize": {
     "message": "Size (KB)",
     "description": "Label for the size column in data tables, entries will be the size of a web resource in kilobytes"
   },
-  "lighthouse-core/lib/i18n.js | columnTimeSpent": {
+  "lighthouse-core/lib/i18n/i18n.js | columnTimeSpent": {
     "message": "Time Spent",
     "description": "Label for the time spent column in data tables, entries will be the number of milliseconds spent during a particular activity"
   },
-  "lighthouse-core/lib/i18n.js | columnURL": {
+  "lighthouse-core/lib/i18n/i18n.js | columnURL": {
     "message": "URL",
     "description": "Label for the URL column in data tables, entries will be the URL of a web resource"
   },
-  "lighthouse-core/lib/i18n.js | columnWastedBytes": {
+  "lighthouse-core/lib/i18n/i18n.js | columnWastedBytes": {
     "message": "Potential Savings (KB)",
     "description": "Label for the wasted bytes column in data tables, entries will be the number of kilobytes the user could reduce their page by if they implemented the suggestions"
   },
-  "lighthouse-core/lib/i18n.js | columnWastedMs": {
+  "lighthouse-core/lib/i18n/i18n.js | columnWastedMs": {
     "message": "Potential Savings (ms)",
     "description": "Label for the wasted bytes column in data tables, entries will be the number of milliseconds the user could reduce page load by if they implemented the suggestions"
   },
-  "lighthouse-core/lib/i18n.js | displayValueByteSavings": {
+  "lighthouse-core/lib/i18n/i18n.js | displayValueByteSavings": {
     "message": "Potential savings of {wastedBytes, number, bytes} KB",
     "description": "Label shown per-audit to show how many bytes smaller the page could be if the user implemented the suggestions. The `{wastedBytes}` placeholder will be replaced with the number of bytes, shown in kilobytes (e.g. 148 KB)"
   },
-  "lighthouse-core/lib/i18n.js | displayValueMsSavings": {
+  "lighthouse-core/lib/i18n/i18n.js | displayValueMsSavings": {
     "message": "Potential savings of {wastedMs, number, milliseconds} ms",
     "description": "Label shown per-audit to show how many milliseconds faster the page load could be if the user implemented the suggestions. The `{wastedMs}` placeholder will be replaced with the time duration, shown in milliseconds (e.g. 140 ms)"
   },
-  "lighthouse-core/lib/i18n.js | ms": {
+  "lighthouse-core/lib/i18n/i18n.js | ms": {
     "message": "{timeInMs, number, milliseconds} ms",
     "description": "Used to show the duration in milliseconds that something lasted. The `{timeInMs}` placeholder will be replaced with the time duration, shown in milliseconds (e.g. 63 ms)"
+  },
+  "lighthouse-core/lib/i18n/i18n.js | seconds": {
+    "message": "{timeInMs, number, seconds} s",
+    "description": "Used to show the duration in seconds that something lasted. The {timeInMs} placeholder will be replaced with the time duration, shown in seconds (e.g. 5.2 s)"
   },
   "lighthouse-core/report/html/renderer/util.js | auditGroupExpandTooltip": {
     "message": "Show audits",
@@ -426,6 +442,14 @@
   "lighthouse-core/report/html/renderer/util.js | errorMissingAuditInfo": {
     "message": "Report error: no audit information",
     "description": "An error string displayed next to a particular audit when it has errored, but not provided any specific error message."
+  },
+  "lighthouse-core/report/html/renderer/util.js | labDataTitle": {
+    "message": "Lab Data",
+    "description": "Title of the lab data section of the Performance category. Within this section are various speed metrics which quantify the pageload performance into values presented in seconds and milliseconds. \"Lab\" is an abbreviated form of \"laboratory\", and refers to the fact that the data is from a controlled test of a website, not measurements from real users visiting that site."
+  },
+  "lighthouse-core/report/html/renderer/util.js | lsPerformanceCategoryDescription": {
+    "message": "[Lighthouse](https://developers.google.com/web/tools/lighthouse/) analysis of the current page on emulated 3G. Values are estimated and may vary.",
+    "description": "Explanation shown to users below performance results to inform them that the test was done with a 3G network connection and to warn them that the numbers they see will likely change slightly the next time they run Lighthouse. 'Lighthouse' becomes link text to additional documentation."
   },
   "lighthouse-core/report/html/renderer/util.js | manualAuditsGroupTitle": {
     "message": "Additional items to manually check",

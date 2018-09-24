@@ -11,10 +11,12 @@ const log = require('lighthouse-logger');
 const MessageFormat = require('intl-messageformat').default;
 const MessageParser = require('intl-messageformat-parser');
 const lookupClosestLocale = require('lookup-closest-locale');
-const LOCALES = require('./locales');
+const LOCALES = require('./locales.js');
 
-const LH_ROOT = path.join(__dirname, '../../');
+const LH_ROOT = path.join(__dirname, '../../../');
 const MESSAGE_INSTANCE_ID_REGEX = /(.* \| .*) # (\d+)$/;
+// Above regex is very slow against large strings. Use QUICK_REGEX as a much quicker discriminator.
+const MESSAGE_INSTANCE_ID_QUICK_REGEX = / # \d+$/;
 
 (() => {
   // Node usually doesn't come with the locales we want built-in, so load the polyfill if we can.
@@ -25,9 +27,7 @@ const MESSAGE_INSTANCE_ID_REGEX = /(.* \| .*) # (\d+)$/;
     // In browser environments where we don't need the polyfill, this won't exist
     if (!IntlPolyfill.NumberFormat) return;
 
-    // @ts-ignore
     Intl.NumberFormat = IntlPolyfill.NumberFormat;
-    // @ts-ignore
     Intl.DateTimeFormat = IntlPolyfill.DateTimeFormat;
   } catch (_) {
     log.warn('i18n', 'Failed to install `intl` polyfill');
@@ -36,8 +36,10 @@ const MESSAGE_INSTANCE_ID_REGEX = /(.* \| .*) # (\d+)$/;
 
 
 const UIStrings = {
-/** Used to show the duration in milliseconds that something lasted. The `{timeInMs}` placeholder will be replaced with the time duration, shown in milliseconds (e.g. 63 ms) */
+  /** Used to show the duration in milliseconds that something lasted. The `{timeInMs}` placeholder will be replaced with the time duration, shown in milliseconds (e.g. 63 ms) */
   ms: '{timeInMs, number, milliseconds}\xa0ms',
+  /** Used to show the duration in seconds that something lasted. The {timeInMs} placeholder will be replaced with the time duration, shown in seconds (e.g. 5.2 s) */
+  seconds: '{timeInMs, number, seconds}\xa0s',
   /** Label shown per-audit to show how many bytes smaller the page could be if the user implemented the suggestions. The `{wastedBytes}` placeholder will be replaced with the number of bytes, shown in kilobytes (e.g. 148 KB) */
   displayValueByteSavings: 'Potential savings of {wastedBytes, number, bytes}\xa0KB',
   /** Label shown per-audit to show how many milliseconds faster the page load could be if the user implemented the suggestions. The `{wastedMs}` placeholder will be replaced with the time duration, shown in milliseconds (e.g. 140 ms) */
@@ -63,6 +65,11 @@ const formats = {
     },
     milliseconds: {
       maximumFractionDigits: 0,
+    },
+    seconds: {
+      // Force the seconds to the tenths place for limited output and ease of scanning
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
     },
   },
 };
@@ -108,6 +115,12 @@ function _preprocessMessageValues(icuMessage, values) {
     .filter(el => el.format && el.format.style === 'milliseconds')
     // @ts-ignore - el.id is always defined when el.format is defined
     .forEach(el => (clonedValues[el.id] = Math.round(clonedValues[el.id] / 10) * 10));
+
+  // Convert all seconds to the correct unit
+  parsed.elements
+    .filter(el => el.format && el.format.style === 'seconds' && el.id === 'timeInMs')
+    // @ts-ignore - el.id is always defined when el.format is defined
+    .forEach(el => (clonedValues[el.id] = Math.round(clonedValues[el.id] / 100) / 10));
 
   // Replace all the bytes with KB
   parsed.elements
@@ -224,7 +237,8 @@ function createMessageInstanceIdFn(filename, fileStrings) {
  * @return {string}
  */
 function getFormatted(icuMessageIdOrRawString, locale) {
-  if (MESSAGE_INSTANCE_ID_REGEX.test(icuMessageIdOrRawString)) {
+  if (MESSAGE_INSTANCE_ID_QUICK_REGEX.test(icuMessageIdOrRawString) &&
+      MESSAGE_INSTANCE_ID_REGEX.test(icuMessageIdOrRawString)) {
     return _resolveIcuMessageInstanceId(icuMessageIdOrRawString, locale).formattedString;
   }
 
@@ -267,7 +281,8 @@ function replaceIcuMessageInstanceIds(lhr, locale) {
       const currentPathInLHR = pathInLHR.concat([property]);
 
       // Check to see if the value in the LHR looks like a string reference. If it is, replace it.
-      if (typeof value === 'string' && MESSAGE_INSTANCE_ID_REGEX.test(value)) {
+      if (typeof value === 'string' && MESSAGE_INSTANCE_ID_QUICK_REGEX.test(value) &&
+          MESSAGE_INSTANCE_ID_REGEX.test(value)) {
         const {icuMessageInstance, formattedString} = _resolveIcuMessageInstanceId(value, locale);
         const messageInstancesInLHR = icuMessagePaths[icuMessageInstance.icuMessageId] || [];
         const currentPathAsString = _formatPathAsString(currentPathInLHR);
