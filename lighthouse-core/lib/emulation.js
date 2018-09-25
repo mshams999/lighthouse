@@ -33,24 +33,19 @@ const NEXUS5X_EMULATION_METRICS = {
  */
 const DESKTOP_EMULATION_METRICS = {
   mobile: false,
-  screenWidth: 1366,
-  screenHeight: 768,
   width: 1366,
   height: 768,
-  positionX: 0,
-  positionY: 0,
-  scale: 1,
   deviceScaleFactor: 1,
 };
 
 const NEXUS5X_USERAGENT = {
   userAgent: 'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5 Build/MRA58N) AppleWebKit/537.36' +
-    '(KHTML, like Gecko) Chrome/69.0.3497.100 Mobile Safari/537.36',
+    '(KHTML, like Gecko) Chrome/71.0.3559.0 Mobile Safari/537.36',
 };
 
 const DESKTOP_USERAGENT = {
   userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 ' +
-    '(KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
+    '(KHTML, like Gecko) Chrome/71.0.3559.0 Safari/537.36',
 };
 
 const OFFLINE_METRICS = {
